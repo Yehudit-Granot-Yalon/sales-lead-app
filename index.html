@@ -3,70 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>איסוף לידים - מכירות שטח</title>
+  <title>הרשמה לעדכוני מכירה</title>
   <style>
     body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; direction: rtl; }
-    .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; margin-top: 0; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
-    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-    button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    .btn-submit { background-color: #28a745; color: white; }
-    .btn-export { background-color: #007bff; color: white; }
-    .btn-clear { background-color: #dc3545; color: white; opacity: 0.7; font-size: 14px; margin-top: 25px; }
-    .error-msg { color: #dc3545; font-size: 14px; display: none; margin-top: 5px; }
-    .success-msg { color: #28a745; text-align: center; font-weight: bold; display: none; margin-top: 10px; }
-    .counter { text-align: center; font-size: 14px; color: #666; margin-top: 15px; }
+    .container { max-width: 480px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
+    h2 { text-align: center; color: #2c3e50; margin-top: 10px; font-size: 24px; }
+    .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 25px; font-size: 15px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-weight: bold; margin-bottom: 6px; color: #34495e; }
+    input, select { width: 100%; padding: 14px; border: 1.5px solid #dcdde1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+    input:focus { border-color: #3498db; outline: none; }
+    button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-submit { background-color: #27ae60; color: white; }
+    .btn-export { background-color: #2980b9; color: white; margin-top: 15px; }
+    .btn-clear { background-color: #e74c3c; color: white; opacity: 0.8; font-size: 14px; margin-top: 15px; }
+    .admin-toggle { position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 22px; cursor: pointer; width: auto; padding: 0; margin: 0; }
+    .error-msg { color: #e74c3c; font-size: 14px; display: none; margin-top: 5px; text-align: center; font-weight: bold; }
+    .success-msg { color: #27ae60; text-align: center; font-weight: bold; display: none; margin-top: 15px; font-size: 18px; background: #eafaf1; padding: 10px; border-radius: 6px; }
+    .city-badge { background-color: #e8f4fd; color: #2980b9; padding: 6px 14px; border-radius: 20px; font-weight: bold; display: inline-block; margin-top: 5px; }
+    
+    /* פופאפ מנהלת */
+    .admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+    .admin-box { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-sizing: border-box; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>טופס הרשמה למכירה</h2>
+  <!-- כפתור הגדרות מנהלת בפינה -->
+  <button class="admin-toggle" onclick="openAdmin()" title="ניהול מכירה">⚙️</button>
 
+  <div style="text-align: center;">
+    <h2 id="displayTitle">הרשמה לעדכוני מכירה</h2>
+    <div id="cityBadgeContainer" style="display: none;">
+      <span class="city-badge" id="currentCityText"></span>
+    </div>
+    <p class="subtitle">השאירו פרטים וקבלו עדכון ראשונים על המכירה הבאה!</p>
+  </div>
+
+  <!-- טופס הלקוח (ללא שדה עיר) -->
   <form id="leadForm">
     <div class="form-group">
-      <label for="cityInput">עיר:</label>
-      <input list="citiesList" id="cityInput" placeholder="בחר או הקלד עיר..." required>
-      <datalist id="citiesList">
-        <option value="אלעד">
-        <option value="בני ברק">
-        <option value="ירושלים">
-        <option value="בית שמש">
-      </datalist>
-    </div>
-
-    <div class="form-group">
-      <label for="phone">טלפון:</label>
+      <label for="phone">מספר טלפון:</label>
       <input type="tel" id="phone" placeholder="05X-XXXXXXX">
     </div>
 
     <div class="form-group">
-      <label for="email">אימייל:</label>
-      <input type="email" id="email" placeholder="example@mail.com">
+      <label for="email">כתובת אימייל:</label>
+      <input type="email" id="email" placeholder="name@example.com">
     </div>
 
-    <div id="contactError" class="error-msg">יש למלא לפחות טלפון אחד או כתובת מייל!</div>
-    <div id="successMsg" class="success-msg">הנתונים נשמרו בהצלחה!</div>
+    <div id="contactError" class="error-msg">נא להזין לפחות טלפון או כתובת מייל!</div>
+    <div id="noCityError" class="error-msg">שימי לב: טרם נבחרה עיר ע"י המנהלת!</div>
 
-    <button type="submit" class="btn-submit">שמור נתונים</button>
+    <button type="submit" class="btn-submit">שמור פרטים</button>
+    <div id="successMsg" class="success-msg">תודה! הפרטים נשמרו בהצלחה 🎉</div>
   </form>
+</div>
 
-  <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+<!-- חלון הגדרות מנהלת -->
+<div id="adminModal" class="admin-modal">
+  <div class="admin-box">
+    <h3 style="margin-top:0; text-align:center;">הגדרות מנהלת ⚙️</h3>
+    
+    <div class="form-group">
+      <label for="citySelectInput">עיר המכירה הנוכחית:</label>
+      <input list="citiesList" id="citySelectInput" placeholder="בחר או הקלד עיר...">
+      <datalist id="citiesList"></datalist>
+    </div>
 
-  <button id="exportBtn" class="btn-export">📥 ייצא לקובץ Excel (CSV)</button>
-  <div id="leadCount" class="counter">סה"כ נרשמו עד כה: 0</div>
+    <button type="button" class="btn-submit" onclick="saveEventCity()">החל עיר לאירוע זה</button>
 
-  <button id="clearBtn" class="btn-clear">מחק את כל הנתונים מהמכשיר</button>
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+
+    <button type="button" id="exportBtn" class="btn-export">📥 ייצא לקובץ Excel (CSV)</button>
+    <div id="leadCount" style="text-align:center; font-size:14px; margin-top:10px; color:#555;">סה"כ נרשמו: 0</div>
+    
+    <button type="button" id="clearBtn" class="btn-clear">מחק את כל המידע מהמכשיר</button>
+    <button type="button" onclick="closeAdmin()" style="background:#bdc3c7; color:#333; margin-top:10px;">סגור</button>
+  </div>
 </div>
 
 <script>
-  // מפתחות ב-LocalStorage
   const STORAGE_KEY = 'sales_leads_data';
   const CITIES_KEY = 'sales_cities_list';
+  const ACTIVE_CITY_KEY = 'sales_active_city';
 
-  // טעינת רשימת ערים שמורה או ברירת מחדל
+  // פתיחה וסגירה של חלון מנהלת
+  function openAdmin() {
+    document.getElementById('adminModal').style.display = 'flex';
+    document.getElementById('citySelectInput').value = localStorage.getItem(ACTIVE_CITY_KEY) || '';
+    updateCounter();
+  }
+
+  function closeAdmin() {
+    document.getElementById('adminModal').style.display = 'none';
+  }
+
+  // טעינת רשימת הערים ב-datalist
   function loadCities() {
     const savedCities = JSON.parse(localStorage.getItem(CITIES_KEY)) || ["אלעד", "בני ברק", "ירושלים", "בית שמש"];
     const datalist = document.getElementById('citiesList');
@@ -78,108 +112,129 @@
     });
   }
 
-  // הוספת עיר חדשה לרשימה הנגללת במידה ולא הייתה קיימת
-  function saveNewCity(city) {
+  // שמירת עיר פעילה לאירוע
+  function saveEventCity() {
+    const chosenCity = document.getElementById('citySelectInput').value.trim();
+    if (!chosenCity) {
+      alert('נא להקליד או לבחור עיר');
+      return;
+    }
+
+    // הוספת העיר לרשימת הערים הכללית אם חדשה
     let savedCities = JSON.parse(localStorage.getItem(CITIES_KEY)) || ["אלעד", "בני ברק", "ירושלים", "בית שמש"];
-    if (!savedCities.includes(city)) {
-      savedCities.push(city);
+    if (!savedCities.includes(chosenCity)) {
+      savedCities.push(chosenCity);
       localStorage.setItem(CITIES_KEY, JSON.stringify(savedCities));
       loadCities();
     }
+
+    localStorage.setItem(ACTIVE_CITY_KEY, chosenCity);
+    applyActiveCity();
+    closeAdmin();
+    alert(`עיר המכירה הוגדרה בהצלחה: ${chosenCity}`);
   }
 
-  // עדכון מונה הלידים במסך
+  // עדכון הממשק של הלקוח עם העיר הפעילה
+  function applyActiveCity() {
+    const activeCity = localStorage.getItem(ACTIVE_CITY_KEY);
+    const badgeContainer = document.getElementById('cityBadgeContainer');
+    const badgeText = document.getElementById('currentCityText');
+    const displayTitle = document.getElementById('displayTitle');
+
+    if (activeCity) {
+      badgeText.innerText = `מכירה ב${activeCity}`;
+      badgeContainer.style.display = 'block';
+      displayTitle.innerText = `הרשמה למכירה ב${activeCity}`;
+    } else {
+      badgeContainer.style.display = 'none';
+      displayTitle.innerText = `הרשמה לעדכוני מכירה`;
+    }
+  }
+
   function updateCounter() {
     const leads = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     document.getElementById('leadCount').innerText = `סה"כ נרשמו עד כה: ${leads.length}`;
   }
 
-  // שמירת הטופס
+  // שמירת ליד ע"י הלקוח
   document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const city = document.getElementById('cityInput').value.trim();
+    const activeCity = localStorage.getItem(ACTIVE_CITY_KEY);
     const phone = document.getElementById('phone').value.trim();
     const email = document.getElementById('email').value.trim();
-    const errorMsg = document.getElementById('contactError');
+    const contactError = document.getElementById('contactError');
+    const noCityError = document.getElementById('noCityError');
     const successMsg = document.getElementById('successMsg');
 
-    // אימות: חובה לפחות טלפון או מייל
-    if (!phone && !email) {
-      errorMsg.style.display = 'block';
+    contactError.style.display = 'none';
+    noCityError.style.display = 'none';
+
+    if (!activeCity) {
+      noCityError.style.display = 'block';
       return;
     }
-    errorMsg.style.display = 'none';
 
-    // שמירת העיר לרשימה הנגללת העתידית
-    saveNewCity(city);
+    if (!phone && !email) {
+      contactError.style.display = 'block';
+      return;
+    }
 
-    // יצירת אובייקט הליד
     const newLead = {
-      city: city,
+      city: activeCity,
       phone: phone,
       email: email,
       date: new Date().toLocaleString('he-IL')
     };
 
-    // שמירה ב-LocalStorage
     const leads = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     leads.push(newLead);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
 
-    // איפוס הטופס והצגת הודעת הצלחה
     document.getElementById('phone').value = '';
     document.getElementById('email').value = '';
+    
     successMsg.style.display = 'block';
-    setTimeout(() => { successMsg.style.display = 'none'; }, 2000);
+    setTimeout(() => { successMsg.style.display = 'none'; }, 2500);
 
     updateCounter();
   });
 
-  // ייצוא לקובץ אקסל (CSV עם תמיכה מלאה בעברית)
+  // ייצוא לאקסל (CSV)
   document.getElementById('exportBtn').addEventListener('click', function() {
     const leads = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     if (leads.length === 0) {
-      alert('אין נתונים לייצוא עדיין.');
+      alert('אין נתונים לייצוא.');
       return;
     }
 
-    // הוספת UTF-8 BOM כדי שהאקסל יפתח את העברית כראוי
-    let csvContent = "\uFEFF"; 
-    csvContent += "עיר,טלפון,מייל,תאריך הרשמה\n";
-
+    let csvContent = "\uFEFFעיר,טלפון,מייל,תאריך ושעה\n";
     leads.forEach(row => {
-      // עטיפה במירכאות למניעת שגיאות פסיקים
-      const cityEscaped = `"${row.city.replace(/"/g, '""')}"`;
-      const phoneEscaped = `"${row.phone.replace(/"/g, '""')}"`;
-      const emailEscaped = `"${row.email.replace(/"/g, '""')}"`;
-      const dateEscaped = `"${row.date}"`;
-
-      csvContent += `${cityEscaped},${phoneEscaped},${emailEscaped},${dateEscaped}\n`;
+      csvContent += `"${row.city.replace(/"/g, '""')}","${row.phone.replace(/"/g, '""')}","${row.email.replace(/"/g, '""')}","${row.date}"\n`;
     });
 
-    // הורדת הקובץ
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `leads_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `sales_leads_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   });
 
-  // ניקוי זיכרון
+  // מחיקת נתונים
   document.getElementById('clearBtn').addEventListener('click', function() {
-    if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים שנשמרו במכשיר זה?')) {
+    if (confirm('בטוחה שברצונך למחוק את כל הנתונים שנאגרו במכשיר?')) {
       localStorage.removeItem(STORAGE_KEY);
       updateCounter();
-      alert('הנתונים נמחקו בהצלחה.');
+      alert('כל הנתונים נמחקו.');
     }
   });
 
-  // טעינה ראשונית
+  // אתחול
   loadCities();
+  applyActiveCity();
   updateCounter();
 </script>
 
