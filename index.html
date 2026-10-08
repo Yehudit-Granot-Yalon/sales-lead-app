@@ -1,335 +1,1430 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>הרשמה לעדכוני מכירה</title>
-    <style>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הרשמה לעדכוני מכירה</title>
+  <!-- Google Fonts: Heebo (Hebrew) & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --font-main: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-num: 'Plus Jakarta Sans', 'Heebo', sans-serif;
+
+      --bg-page: #f8fafc;
+      --surface: #ffffff;
+      --surface-secondary: #f8fafc;
+      --surface-muted: #f1f5f9;
+
+      --border-subtle: #f1f5f9;
+      --border-default: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --border-focus: #6366f1;
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+
+      --success: #10b981;
+      --success-hover: #059669;
+      --success-light: #ecfdf5;
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-light: #fef2f2;
+
+      --admin: #7c3aed;
+      --admin-hover: #6d28d9;
+      --admin-light: #f5f3ff;
+
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+      --shadow-card: 0 20px 40px -12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.7);
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      direction: rtl;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient decorative background glows */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -150px;
+      right: -150px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.09) 0%, rgba(99, 102, 241, 0) 70%);
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -150px;
+      left: -150px;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 70%);
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Main container card */
+    .container {
+      width: 100%;
+      max-width: 540px;
+      background: var(--surface);
+      padding: 36px 32px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Top navigation bar in lead app */
+    .top-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      min-height: 38px;
+    }
+
+    .app-mode-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--surface-muted);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+      animation: pulseDot 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseDot {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+      }
+    }
+
+    /* Admin toggle button */
+    .admin-toggle {
+      display: none;
+      /* toggled via JS based on role */
+      background: var(--admin-light);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      color: var(--admin);
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .admin-toggle:hover {
+      background: #ede9fe;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Keep inline-flex even if script sets style.display = 'block' */
+    .admin-toggle[style*="block"] {
+      display: inline-flex !important;
+    }
+
+    /* Header section */
+    .header-section {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .city-badge-container {
+      margin-bottom: 12px;
+    }
+
+    .city-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 7px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 15px;
+      font-weight: 700;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .city-badge::before {
+      content: '📍';
+      font-size: 14px;
+    }
+
+    h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* Form styling */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .optional-hint {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    input[type="tel"],
+    input[type="email"],
+    input[type="text"] {
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 48px 14px 16px;
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: var(--surface-secondary);
+      font-family: var(--font-main);
+      font-size: 16px;
+      color: var(--text-primary);
+      box-sizing: border-box;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    input[type="text"]:focus {
+      background: var(--surface);
+      border-color: var(--border-focus);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    input:focus+.input-icon,
+    .input-wrapper:focus-within .input-icon {
+      color: var(--primary);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* Connected Email input with inline @gmail.com */
+    .email-connected-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 52px;
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: var(--surface-secondary);
+      padding: 0 16px;
+      cursor: text;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      direction: ltr;
+      box-sizing: border-box;
+    }
+
+    .email-connected-wrapper:focus-within {
+      background: var(--surface);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    .email-connected-icon {
+      display: flex;
+      align-items: center;
+      color: var(--text-muted);
+      margin-right: 10px;
+      flex-shrink: 0;
+      transition: color 0.2s ease;
+    }
+
+    .email-connected-wrapper:focus-within .email-connected-icon {
+      color: var(--primary);
+    }
+
+    .email-input-stream {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      direction: ltr;
+      overflow: hidden;
+    }
+
+    .email-connected-input {
+      border: none !important;
+      background: transparent !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 10px 0 !important;
+      margin: 0 !important;
+      min-height: 48px !important;
+      font-family: var(--font-num), var(--font-main);
+      font-size: 16px !important;
+      color: var(--text-primary) !important;
+      direction: ltr !important;
+      text-align: left !important;
+      width: 82px;
+      min-width: 15px;
+      max-width: calc(100% - 100px);
+    }
+
+    .email-connected-suffix {
+      font-family: var(--font-num), var(--font-main);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      user-select: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: -0.01em;
+      transition: opacity 0.15s ease;
+    }
+
+    .email-hint-note {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .email-connected-wrapper:focus-within+.email-hint-note {
+      color: var(--primary);
+    }
+
+    .email-measurer {
+      position: absolute;
+      visibility: hidden;
+      height: 0;
+      overflow: scroll;
+      white-space: pre;
+      font-family: var(--font-num), var(--font-main);
+      font-size: 16px;
+      letter-spacing: normal;
+      pointer-events: none;
+    }
+
+    /* Interactive City Chips */
+    .cities-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .chips-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .action-link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: opacity 0.2s ease;
+    }
+
+    .action-link-btn:hover {
+      text-decoration: underline;
+    }
+
+    .action-divider {
+      color: var(--border-hover);
+      font-size: 12px;
+    }
+
+    .city-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .city-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 15px;
+      background: var(--surface-muted);
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .city-chip:hover {
+      background: var(--border-subtle);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .city-chip.is-selected {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+    }
+
+    .chip-check {
+      font-size: 12px;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+    }
+
+    .city-chip.is-selected .chip-check {
+      transform: scale(1.1);
+    }
+
+    .form-hint {
+      display: block;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Hidden native select for form accessibility & script compatibility */
+    .sr-city-select {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Error & Success Messages */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+      margin-bottom: 16px;
+      animation: shake 0.3s ease;
+    }
+
+    .error-msg[style*="block"] {
+      display: flex !important;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-4px);
+      }
+
+      75% {
+        transform: translateX(4px);
+      }
+    }
+
+    .success-msg {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--success-light);
+      color: var(--success);
+      border: 1.5px solid rgba(16, 185, 129, 0.3);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 18px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success-msg[style*="block"] {
+      display: flex !important;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Buttons */
+    button {
+      font-family: var(--font-main);
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--success-gradient);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .footer-actions {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-default);
+      display: flex;
+      justify-content: center;
+    }
+
+    .switch-user {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-pill);
+      transition: all 0.2s ease;
+    }
+
+    .switch-user:hover {
+      background: var(--surface-muted);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    /* Auth Screen */
+    .auth-screen {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      padding: 40px 32px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .auth-header {
+      margin-bottom: 28px;
+    }
+
+    .brand-icon-wrapper {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-light);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.12);
+    }
+
+    .auth-header h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .auth-header p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .auth-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .auth-role-card {
+      width: 100%;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: right;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .btn-user {
+      background: var(--surface);
+      border: 2px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .btn-user:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-admin {
+      background: var(--surface);
+      border: 2px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .btn-admin:hover {
+      border-color: var(--admin);
+      background: var(--admin-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .role-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .user-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .admin-badge {
+      background: var(--admin-light);
+      color: var(--admin);
+    }
+
+    .auth-role-card:hover .role-icon-box {
+      transform: scale(1.08);
+    }
+
+    .role-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .role-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .role-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .role-arrow {
+      color: var(--text-muted);
+      font-size: 18px;
+      font-weight: bold;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .auth-role-card:hover .role-arrow {
+      transform: translateX(-4px);
+      color: var(--text-primary);
+    }
+
+    /* Admin Modal */
+    .admin-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .admin-box {
+      background: var(--surface);
+      padding: 28px;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .admin-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .admin-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-header-title h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-muted);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .admin-section {
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .admin-label {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .btn-primary-action {
+      width: 100%;
+      min-height: 44px;
+      background: var(--primary-gradient);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary-action:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    }
+
+    .stats-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-default);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+
+    .stats-icon {
+      font-size: 22px;
+    }
+
+    .stats-info {
+      flex: 1;
+    }
+
+    .stats-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stats-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-num);
+    }
+
+    .btn-export {
+      width: 100%;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #0284c7;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-export:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    .admin-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-sec-action {
+      width: 100%;
+      min-height: 42px;
+      background: var(--surface);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-sec-action:hover {
+      background: var(--surface-muted);
+      border-color: var(--border-hover);
+    }
+
+    .btn-clear {
+      width: 100%;
+      min-height: 42px;
+      background: var(--danger-light);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-clear:hover {
+      background: #fee2e2;
+      border-color: var(--danger);
+    }
+
+    .section-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .btn-text-action {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-weight: 600;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-text-action:hover {
+      text-decoration: underline;
+    }
+
+    .add-city-box {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0 12px;
+    }
+
+    .add-city-box input {
+      flex: 1;
+      min-height: 42px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-default);
+      background: var(--surface);
+    }
+
+    .add-city-box input:focus {
+      border-color: var(--border-focus);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .btn-add-city {
+      background: var(--primary);
+      color: white;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-add-city:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .admin-cities-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding: 4px 2px;
+    }
+
+    .admin-city-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-default);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .admin-city-delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .admin-city-delete-btn:hover {
+      color: var(--danger);
+      background: var(--danger-light);
+    }
+
+    .admin-modal-footer {
+      margin-top: 14px;
+    }
+
+    .btn-close-modal {
+      width: 100%;
+      min-height: 42px;
+      background: var(--surface-muted);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-modal:hover {
+      background: var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 600px) {
       body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f6f9;
-        margin: 0;
-        padding: 24px 18px;
-        direction: rtl;
-        min-height: 100vh;
-        box-sizing: border-box;
+        padding: 16px 12px;
       }
-      .container {
-        width: min(92vw, 620px);
-        max-width: 620px;
-        margin: 0 auto;
-        background: #fff;
-        padding: 34px 32px 28px;
-        border-radius: 18px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        position: relative;
-        box-sizing: border-box;
-      }
-      h2 {
-        text-align: center;
-        color: #2c3e50;
-        margin-top: 10px;
-        font-size: 28px;
-      }
-      .subtitle {
-        text-align: center;
-        color: #7f8c8d;
-        margin-bottom: 28px;
-        font-size: 17px;
-      }
-      .form-group {
-        margin-bottom: 22px;
-      }
-      label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 8px;
-        color: #34495e;
-        font-size: 18px;
-      }
-      input, select {
-        width: 100%;
-        padding: 18px 16px;
-        border: 1.5px solid #dcdde1;
-        border-radius: 10px;
-        box-sizing: border-box;
-        font-size: 18px;
-        min-height: 58px;
-      }
-      input:focus {
-        border-color: #3498db;
-        outline: none;
-      }
-      button {
-        width: 100%;
-        padding: 18px 16px;
-        border: none;
-        border-radius: 10px;
-        font-size: 19px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 12px;
-        min-height: 58px;
-      }
-      .btn-submit {
-        background-color: #27ae60;
-        color: white;
-      }
-      .btn-export {
-        background-color: #2980b9;
-        color: white;
-        margin-top: 15px;
-      }
-      .btn-clear {
-        background-color: #e74c3c;
-        color: white;
-        opacity: 0.8;
-        font-size: 16px;
-        margin-top: 15px;
-      }
-      .btn-user {
-        background-color: #2c3e50;
-        color: white;
-      }
-      .btn-admin {
-        background-color: #8e44ad;
-        color: white;
-      }
-      .switch-user {
-        background-color: #95a5a6;
-        color: #fff;
-        margin-top: 15px;
-      }
-      .admin-toggle {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: none;
-        border: none;
-        font-size: 22px;
-        cursor: pointer;
-        width: auto;
-        padding: 0;
-        margin: 0;
-        display: none;
-      }
-      .hidden {
-        display: none !important;
-      }
+
+      .container,
       .auth-screen {
-        width: min(92vw, 560px);
-        max-width: 560px;
-        margin: 80px auto;
-        background: white;
-        padding: 34px 28px;
+        padding: 26px 20px;
         border-radius: 18px;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.09);
-        box-sizing: border-box;
       }
-      .auth-screen h2 {
-        margin-top: 0;
-        font-size: 28px;
+
+      h2 {
+        font-size: 22px;
       }
-      .auth-screen p {
-        text-align: center;
-        color: #7f8c8d;
-        margin-bottom: 24px;
-        font-size: 17px;
-      }
-      .error-msg {
-        color: #e74c3c;
-        font-size: 14px;
-        display: none;
-        margin-top: 5px;
-        text-align: center;
-        font-weight: bold;
-      }
-      .success-msg {
-        color: #27ae60;
-        text-align: center;
-        font-weight: bold;
-        display: none;
-        margin-top: 15px;
-        font-size: 18px;
-        background: #eafaf1;
-        padding: 10px;
-        border-radius: 6px;
-      }
-      .city-badge {
-        background-color: #e8f4fd;
-        color: #2980b9;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: bold;
-        display: inline-block;
-        margin-top: 5px;
-      }
-      .admin-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 100;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        box-sizing: border-box;
-      }
+
       .admin-box {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        width: min(92vw, 430px);
-        max-width: 430px;
-        box-sizing: border-box;
+        padding: 22px 18px;
       }
 
-      @media (max-width: 768px) {
-        body {
-          padding: 18px 14px;
-        }
-
-        .container,
-        .auth-screen,
-        .admin-box {
-          width: min(92vw, 500px);
-        }
-
-        .container,
-        .auth-screen {
-          padding: 22px 18px;
-        }
-
-        h2 {
-          font-size: 24px;
-        }
-
-        .subtitle,
-        .auth-screen p {
-          font-size: 15px;
-        }
-
-        label {
-          font-size: 17px;
-        }
-
-        input, select {
-          padding: 15px 14px;
-          font-size: 17px;
-        }
-
-        button {
-          font-size: 17px;
-          padding: 15px 14px;
-        }
+      .admin-actions-grid {
+        grid-template-columns: 1fr;
       }
+    }
+  </style>
+</head>
 
-      @media (max-width: 480px) {
-        body {
-          padding: 14px 12px;
-        }
-
-        .container,
-        .auth-screen,
-        .admin-box {
-          width: 100%;
-        }
-
-        .container,
-        .auth-screen {
-          padding: 18px 14px;
-        }
-
-        .subtitle,
-        .auth-screen p {
-          font-size: 14px;
-        }
-
-        input, select, button {
-          font-size: 15px;
-        }
-
-        .admin-toggle {
-          font-size: 20px;
-          top: 12px;
-          left: 12px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="authScreen" class="auth-screen">
-      <h2>בחרו סוג משתמש</h2>
-      <p>משתמש כללי אינו צריך סיסמה. מנהל נדרש להזין סיסמה.</p>
-      <button type="button" id="continueUserBtn" class="btn-user">משתמש כללי</button>
-      <button type="button" id="adminLoginBtn" class="btn-admin">התחברות כמנהל</button>
+<body>
+  <!-- Auth Screen -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-header">
+      <div class="brand-icon-wrapper">
+        <span>✨</span>
+      </div>
+      <h2>בחירת סוג כניסה</h2>
+      <p>בחרו את אופן השימוש בעמדה הנוכחית</p>
     </div>
 
-    <div id="appContainer" class="hidden">
-      <div class="container">
-        <button class="admin-toggle" id="adminToggleBtn" onclick="openAdmin()" title="ניהול מכירה">⚙️</button>
+    <div class="auth-cards">
+      <button type="button" id="continueUserBtn" class="auth-role-card btn-user">
+        <div class="role-icon-box user-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <div class="role-info">
+          <span class="role-title">משתמש כללי (עמדת לקוחות)</span>
+          <span class="role-desc">פתיחת טופס רישום למבקרים ללא צורך בסיסמה</span>
+        </div>
+        <span class="role-arrow">←</span>
+      </button>
 
-        <div style="text-align: center;">
-          <h2 id="displayTitle">הרשמה לעדכוני מכירה</h2>
-          <div id="cityBadgeContainer" style="display: none;">
-            <span class="city-badge" id="currentCityText"></span>
-          </div>
-          <p class="subtitle">השאירו פרטים וקבלו עדכון ראשונים על המכירה הבאה!</p>
+      <button type="button" id="adminLoginBtn" class="auth-role-card btn-admin">
+        <div class="role-icon-box admin-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <div class="role-info">
+          <span class="role-title">התחברות כמנהל/ת</span>
+          <span class="role-desc">ניהול עיר המכירה, צפייה בלידים וייצוא לאקסל</span>
+        </div>
+        <span class="role-arrow">←</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Kiosk App -->
+  <div id="appContainer" class="hidden">
+    <div class="container">
+      <!-- Top bar with admin controls -->
+      <div class="top-nav-bar">
+        <div class="app-mode-tag">
+          <span class="status-dot"></span>
+          <span>עמדת רישום פעילה</span>
         </div>
 
-        <form id="leadForm">
-          <div class="form-group">
-            <label for="phone">מספר טלפון:</label>
-            <input type="tel" id="phone" placeholder="05X-XXXXXXX" autocomplete="off" spellcheck="false">
-          </div>
-
-          <div class="form-group">
-            <label for="email">כתובת אימייל:</label>
-            <input type="email" id="email" placeholder="name@example.com" autocomplete="off" spellcheck="false">
-          </div>
-
-          <div class="form-group">
-            <label for="citySelect">ערים לקבלת עדכונים:</label>
-            <select id="citySelect" aria-label="בחר ערים" autocomplete="off" multiple size="6"></select>
-          </div>
-
-          <div id="contactError" class="error-msg">נא להזין לפחות טלפון או כתובת מייל!</div>
-          <div id="noCityError" class="error-msg">שימי לב: טרם נבחרה עיר ע"י המנהלת!</div>
-
-          <button type="submit" class="btn-submit">שמור פרטים</button>
-          <div id="successMsg" class="success-msg">תודה! הפרטים נשמרו בהצלחה 🎉</div>
-        </form>
-
-        <button type="button" id="switchUserBtn" class="switch-user">החלף משתמש</button>
+        <button class="admin-toggle" id="adminToggleBtn" onclick="openAdmin()" title="ניהול מכירה">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <span>הגדרות מנהלת</span>
+        </button>
       </div>
-    </div>
 
-    <div id="adminModal" class="admin-modal">
-      <div class="admin-box">
-        <h3 style="margin-top:0; text-align:center;">הגדרות מנהלת ⚙️</h3>
+      <!-- Header -->
+      <div class="header-section">
+        <div id="cityBadgeContainer" class="city-badge-container" style="display: none;">
+          <span class="city-badge" id="currentCityText"></span>
+        </div>
+        <h2 id="displayTitle">הרשמה לעדכוני מכירה</h2>
+        <p class="subtitle">השאירו פרטים וקבלו עדכון ראשונים על המכירה הבאה!</p>
+      </div>
+
+      <!-- Lead Form -->
+      <form id="leadForm">
+        <div class="form-group">
+          <label for="phone">
+            <span>מספר טלפון:</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </span>
+            <input type="tel" id="phone" placeholder="05XXXXXXXX" autocomplete="off" spellcheck="false" inputmode="numeric" pattern="[0-9]*" maxlength="11">
+          </div>
+        </div>
 
         <div class="form-group">
-          <label for="citySelectInput">עיר המכירה הנוכחית:</label>
-          <input list="citiesList" id="citySelectInput" placeholder="בחר או הקלד עיר...">
-          <datalist id="citiesList"></datalist>
+          <label for="email">
+            <span>כתובת אימייל:</span>
+            <span class="optional-hint">(רק שם המשתמש)</span>
+          </label>
+          <div class="email-connected-wrapper" id="emailWrapper">
+            <span class="email-connected-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </span>
+            <div class="email-input-stream">
+              <input type="text" id="email" class="email-connected-input" placeholder="email" autocomplete="off"
+                spellcheck="false" dir="ltr" inputmode="email">
+              <span class="email-connected-suffix" id="emailConnectedSuffix">@gmail.com</span>
+            </div>
+          </div>
+          <span id="emailMeasurer" class="email-measurer" aria-hidden="true"></span>
         </div>
 
-        <button type="button" class="btn-submit" onclick="saveEventCity()">החל עיר לאירוע זה</button>
+        <div class="form-group">
+          <div class="cities-header">
+            <label for="citySelect">ערים לקבלת עדכונים:</label>
+            <div class="chips-actions">
+              <button type="button" id="selectAllCitiesBtn" class="action-link-btn">סמן הכל</button>
+              <span class="action-divider">•</span>
+              <button type="button" id="clearAllCitiesBtn" class="action-link-btn">נקה</button>
+            </div>
+          </div>
 
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+          <!-- Touch-friendly modern interactive chips -->
+          <div id="cityChipsContainer" class="city-chips-container"></div>
 
-        <button type="button" id="exportBtn" class="btn-export">📥 ייצא לקובץ Excel (CSV)</button>
-        <div id="leadCount" style="text-align:center; font-size:14px; margin-top:10px; color:#555;">סה"כ נרשמו: 0</div>
+          <!-- Hidden native select for standard multi-select form compatibility -->
+          <select id="citySelect" class="sr-city-select" aria-label="בחר ערים" autocomplete="off" multiple
+            size="6"></select>
+          <span class="form-hint">ניתן לבחור מספר ערים בהן תרצו להתעדכן</span>
+        </div>
 
-        <button type="button" id="clearBtn" class="btn-clear">מחק את כל המידע מהמכשיר</button>
-        <button type="button" onclick="changeAdminPassword()" style="background:#6c757d; color:white; margin-top:10px;">🔑 שינוי סיסמת מנהלת</button>
-        <button type="button" onclick="closeAdmin()" style="background:#bdc3c7; color:#333; margin-top:10px;">סגור</button>
+        <div id="contactError" class="error-msg">
+          <span>⚠️</span>
+          <span>נא להזין לפחות מספר טלפון או כתובת מייל!</span>
+        </div>
+
+        <div id="phoneError" class="error-msg">
+          <span>⚠️</span>
+          <span>מספר הטלפון שהוזן אינו תקין (נא להזין מספר נייד או נייח תקין).</span>
+        </div>
+
+        <div id="emailError" class="error-msg">
+          <span>⚠️</span>
+          <span>כתובת האימייל שהוזנה אינה תקינה (למשל: name@example.com).</span>
+        </div>
+
+        <div id="noCityError" class="error-msg">
+          <span>⚠️</span>
+          <span>נא לבחור לפחות עיר אחת לקבלת עדכונים!</span>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <span>שמור פרטים</span>
+          <span>✨</span>
+        </button>
+
+        <div id="successMsg" class="success-msg">
+          <span>✓</span>
+          <span>תודה! הפרטים נשמרו בהצלחה 🎉</span>
+        </div>
+      </form>
+
+      <div class="footer-actions">
+        <button type="button" id="switchUserBtn" class="switch-user">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M19 8v6" />
+            <path d="M22 11h-6" />
+          </svg>
+          <span>החלף משתמש</span>
+        </button>
       </div>
     </div>
+  </div>
 
-    <script src="script.js"></script>
-  </body>
+  <!-- Admin Modal -->
+  <div id="adminModal" class="admin-modal">
+    <div class="admin-box">
+      <div class="admin-modal-header">
+        <div class="admin-header-title">
+          <span>⚙️</span>
+          <h3>הגדרות מנהלת</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeAdmin()" title="סגור חלון">✕</button>
+      </div>
+
+      <!-- Section 1: Event City -->
+      <div class="admin-section">
+        <div class="section-title">עיר המכירה הנוכחית</div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="citySelectInput" class="admin-label">הגדרת עיר לאירוע הפעיל:</label>
+          <input list="citiesList" id="citySelectInput" placeholder="בחר או הקלד עיר..." autocomplete="off">
+          <datalist id="citiesList"></datalist>
+        </div>
+        <button type="button" class="btn-primary-action" onclick="saveEventCity()">החל עיר לאירוע זה</button>
+      </div>
+
+      <!-- Section: Manage Cities List -->
+      <div class="admin-section">
+        <div class="section-header-flex">
+          <div class="section-title" style="margin-bottom: 0;">רשימת הערים במערכת</div>
+          <button type="button" class="btn-text-action" onclick="resetCitiesToDefault()"
+            title="איפוס לרשימת ברירת מחדל">שחזר ברירת מחדל</button>
+        </div>
+
+        <div class="add-city-box">
+          <input type="text" id="newCityInput" placeholder="הקלד שם עיר להוספה..." autocomplete="off">
+          <button type="button" id="addCityBtn" class="btn-add-city" onclick="handleAddNewCity()">+ הוסף</button>
+        </div>
+
+        <div id="adminCitiesListContainer" class="admin-cities-chips"></div>
+      </div>
+
+      <!-- Section 2: Stats & Export -->
+      <div class="admin-section">
+        <div class="section-title">דוחות וייצוא נתונים</div>
+        <div class="stats-card">
+          <div class="stats-icon">📊</div>
+          <div class="stats-info">
+            <div class="stats-label">רישומים במכשיר</div>
+            <div id="leadCount" class="stats-value">סה"כ נרשמו עד כה: 0</div>
+          </div>
+        </div>
+        <button type="button" id="exportBtn" class="btn-export">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </svg>
+          <span>ייצא לקובץ Excel (CSV)</span>
+        </button>
+      </div>
+
+      <!-- Section 3: Actions & Danger zone -->
+      <div class="admin-section">
+        <div class="section-title">אבטחה וניהול</div>
+        <div class="admin-actions-grid">
+          <button type="button" class="btn-sec-action" onclick="changeAdminPassword()">
+            <span>🔑 שינוי סיסמה</span>
+          </button>
+          <button type="button" id="clearBtn" class="btn-clear">
+            <span>🗑️ מחק מידע</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button type="button" class="btn-close-modal" onclick="closeAdmin()">סגור חלון</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
 </html>
