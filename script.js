@@ -659,3 +659,11 @@ if (localStorage.getItem(USER_ROLE_KEY) === 'admin') {
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('appContainer').classList.add('hidden');
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
