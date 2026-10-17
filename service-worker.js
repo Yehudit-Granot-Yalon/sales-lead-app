@@ -1,7 +1,11 @@
 const CACHE_NAME = 'sales-lead-app-v1';
 const APP_FILES = [
   new URL('./index.html', self.registration.scope).href,
-  new URL('./script.js', self.registration.scope).href
+  new URL('./script.js', self.registration.scope).href,
+  new URL('./manifest.json', self.registration.scope).href,
+  new URL('./app-icon.svg', self.registration.scope).href,
+  new URL('./app-icon-192.png', self.registration.scope).href,
+  new URL('./app-icon-512.png', self.registration.scope).href
 ];
 
 self.addEventListener('install', event => {
